@@ -2,7 +2,7 @@
 FROM node:16 AS build
 
 # Устанавливаем рабочую директорию внутри контейнера
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Копируем package.json и package-lock.json (или yarn.lock) в контейнер
 COPY package.json package-lock.json ./
@@ -20,13 +20,13 @@ RUN npm run build
 FROM nginx:alpine
 
 # Копируем скомпилированные файлы из предыдущего этапа сборки в директорию Nginx
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /usr/src/app/build /usr/share/nginx/html
 
 # Копируем ваш конфиг Nginx в контейнер
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Экспонируем 80 порт
-EXPOSE 9002
+EXPOSE 80
 
 # Запускаем Nginx в контейнере
 CMD ["nginx", "-g", "daemon off;"]
