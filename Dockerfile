@@ -1,34 +1,34 @@
-# 1. Используем Node.js для сборки фронтенда
+# 1. Используем Node.js для сборки приложения
 FROM node:18 AS build
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем package.json и package-lock.json и устанавливаем зависимости
+# Копируем package.json и package-lock.json
 COPY package.json package-lock.json ./
+
+# Устанавливаем зависимости
 RUN npm install
 
-# Копируем весь проект и собираем его
+# Копируем все файлы и собираем проект
 COPY . .
 RUN npm run build
 
-# 2. Используем Nginx для раздачи собранного React-приложения
-FROM nginx:alpine
+# 2. Используем простой сервер для отдачи статики
+# Выбираем Nginx или любой другой сервер для статики, например, Serve (или любой другой HTTP сервер)
+FROM node:18-alpine
 
-# Удаляем дефолтный конфиг Nginx
-RUN rm /etc/nginx/conf.d/default.conf
+# Устанавливаем сервер Serve для раздачи статики
+RUN npm install -g serve
 
-# Копируем наш кастомный конфиг
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Указываем рабочую директорию
+WORKDIR /app
 
-# Копируем собранные файлы React в директорию Nginx
-COPY --from=build /app/build /usr/share/nginx/html
+# Копируем собранные файлы из предыдущего этапа
+COPY --from=build /app/build /app
 
-# Копируем SSL-сертификаты (если уже есть)
-COPY certs /etc/letsencrypt
+# Открываем порт
+EXPOSE 9002
 
-# Открываем порты 80 и 443
-EXPOSE 80 443
-
-# Запускаем Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Запускаем сервер для раздачи статики
+CMD ["serve", "-s", "build", "-l", "9002"]
