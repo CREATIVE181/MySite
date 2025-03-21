@@ -29,7 +29,7 @@ COPY --from=build /app /app
 RUN npm install -g serve
 
 # Открываем порт
-EXPOSE 5000
+EXPOSE 9002
 
 # Запускаем сервер
 CMD ["serve", "-s", "build"]
