@@ -1,35 +1,32 @@
-# Используем официальный образ Node.js
-FROM node:18-alpine AS build
+# Используем официальный Node.js образ для сборки React-приложения
+FROM node:16 AS build
 
-# Устанавливаем рабочую директорию
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем package.json и package-lock.json (если он существует)
-COPY package*.json ./
+# Копируем package.json и package-lock.json (или yarn.lock) в контейнер
+COPY package.json package-lock.json ./
 
 # Устанавливаем зависимости
 RUN npm install
 
-# Копируем остальные файлы проекта
+# Копируем все исходные файлы приложения
 COPY . .
 
-# Строим проект (если необходимо)
+# Собираем проект
 RUN npm run build
 
-# Используем другой образ для запуска приложения
-FROM node:18-alpine AS production
+# Используем официальный образ Nginx для финального контейнера
+FROM nginx:alpine
 
-# Устанавливаем рабочую директорию
-WORKDIR /app
+# Копируем скомпилированные файлы из предыдущего этапа сборки в директорию Nginx
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Копируем все необходимые файлы из предыдущего образа
-COPY --from=build /app /app
+# Копируем ваш конфиг Nginx в контейнер
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Устанавливаем глобальный сервер
-RUN npm install -g serve
-
-# Открываем порт
+# Экспонируем 80 порт
 EXPOSE 80
 
-# Запускаем сервер
-CMD ["serve", "-s", "build"]
+# Запускаем Nginx в контейнере
+CMD ["nginx", "-g", "daemon off;"]
