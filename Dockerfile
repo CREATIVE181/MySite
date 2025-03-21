@@ -26,7 +26,7 @@ COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Экспонируем 80 порт
-EXPOSE 80
+EXPOSE 9002
 
 # Запускаем Nginx в контейнере
 CMD ["nginx", "-g", "daemon off;"]
