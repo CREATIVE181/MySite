@@ -13,7 +13,7 @@ export const Home: React.FC<HomeProps> = ({ lang, content, setCurrentSection }) 
       <div className="relative mb-8 group">
         <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-red-500 to-yellow-500 rounded-full blur-xl opacity-75 group-hover:opacity-100 transition-opacity"></div>
         <img
-          src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=400&fit=crop"
+          src="./ava.jpg"
           alt="Profile"
           className="w-32 h-32 sm:w-48 sm:h-48 rounded-full relative z-10 border-4 border-red-500"
         />
