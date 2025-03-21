@@ -4,11 +4,17 @@ FROM node:16 AS build
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /usr/src/app
 
-# Копируем package.json и package-lock.json (или yarn.lock) в контейнер
+# Проверяем, создалась ли директория
+RUN ls -la /usr/src
+
+# Копируем package.json и package-lock.json в контейнер
 COPY package.json package-lock.json ./
 
+# Проверяем содержимое текущей директории
+RUN pwd && ls -la
+
 # Устанавливаем зависимости
-RUN npm install
+RUN npm install --verbose
 
 # Копируем все исходные файлы приложения
 COPY . .
